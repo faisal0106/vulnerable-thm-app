@@ -1,0 +1,92 @@
+/* Modern site stylesheet — professional business tool aesthetic
+   This file focuses on visual polish only; security-sensitive behavior 
+   (e.g., plaintext config, missing auth) is preserved elsewhere in the app. */
+
+:root{
+  --bg-1:#0f0f1e; --bg-2:#0a0a14; --panel:rgba(255,255,255,0.02);
+  --muted:#8892a8; --accent:#2563eb; --accent-2:#06b6d4; --danger:#ff7a59;
+  --radius:8px; --maxw:1200px;
+}
+
+/* Base layout */
+html,body{height:100%;margin:0;font-family:'Segoe UI',Roboto,Helvetica,Arial,sans-serif;color:#e6eef6;background:#0f0f1e}
+.container{max-width:var(--maxw);margin:0 auto;padding:0}
+
+/* Subtle background */
+body{background:linear-gradient(180deg,var(--bg-1),var(--bg-2));background-attachment:fixed}
+body::before{content:"";position:fixed;inset:0;z-index:-1;background-image:radial-gradient(600px 300px at 12% 22%, rgba(37,99,235,0.04), transparent 18%), radial-gradient(700px 350px at 88% 78%, rgba(6,182,212,0.03), transparent 22%)}
+
+/* Header */
+header.site{padding:0;border-bottom:1px solid rgba(255,255,255,0.05);background:rgba(10,10,20,0.5);backdrop-filter:blur(8px)}
+header.site.header-bar{display:flex;align-items:center;justify-content:space-between;padding:14px 20px;max-width:100%;margin:0}
+
+.brand{display:flex;align-items:center;gap:10px}
+.logo{width:44px;height:44px;border-radius:6px;background:linear-gradient(135deg,#2563eb,#06b6d4);box-shadow:0 4px 12px rgba(37,99,235,0.2);display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0}
+.logo svg{width:32px;height:32px;display:block}
+.brand .title{font-weight:600;font-size:0.95rem;color:#e6eef6}
+
+.site nav{display:flex;gap:2px}
+.site nav a{padding:8px 12px;color:var(--muted);text-decoration:none;font-size:0.9rem;border-radius:4px;transition:all 0.2s}
+.site nav a:hover{color:#e6eef6;background:rgba(255,255,255,0.05)}
+
+.user-menu{display:flex;align-items:center;gap:12px;font-size:0.9rem}
+.user-avatar{width:32px;height:32px;border-radius:6px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.1)}
+
+/* Card and Glass */
+.glass{background:var(--panel);border-radius:var(--radius);border:1px solid rgba(255,255,255,0.05);box-shadow:0 8px 24px rgba(0,0,0,0.3)}
+.card{padding:16px;border-radius:8px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.05)}
+
+/* Main content area */
+main{padding:24px 20px}
+
+/* Typography */
+h1{font-size:1.8rem;font-weight:600;margin:0 0 12px 0;color:#fff}
+h2{font-size:1.4rem;font-weight:600;margin:0 0 8px 0;color:#fff}
+h3{font-size:1.1rem;font-weight:500;margin:0 0 8px 0;color:#fff}
+h4{font-size:1rem;font-weight:500;margin:0;color:#fff}
+p{line-height:1.5;margin:0 0 12px 0}
+
+/* Buttons */
+button{padding:8px 14px;border-radius:6px;background:#2563eb;color:#fff;border:none;cursor:pointer;font-weight:500;font-size:0.9rem;transition:all 0.2s}
+button:hover{background:#1d4ed8;transform:translateY(-1px)}
+button:active{transform:translateY(0)}
+
+/* Forms */
+input, select, textarea{width:100%;padding:8px 10px;border-radius:6px;border:1px solid rgba(255,255,255,0.1);background:rgba(255,255,255,0.02);color:#e6eef6;font-size:0.9rem;font-family:inherit;box-sizing:border-box;transition:all 0.2s}
+input:focus, select:focus, textarea:focus{border-color:rgba(37,99,235,0.5);box-shadow:0 0 0 2px rgba(37,99,235,0.1);outline:none;background:rgba(255,255,255,0.03)}
+
+/* Table */
+table{width:100%;border-collapse:collapse;font-size:0.9rem}
+table th{padding:10px;text-align:left;color:var(--muted);font-weight:500;border-bottom:1px solid rgba(255,255,255,0.1)}
+table td{padding:10px;border-bottom:1px solid rgba(255,255,255,0.05)}
+table tr:hover{background:rgba(255,255,255,0.02)}
+
+/* List items */
+.muted{color:var(--muted)}
+
+/* Grid layout */
+.capability-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-top:16px}
+.capability-grid .card{cursor:pointer;transition:all 0.2s}
+.capability-grid .card:hover{background:rgba(255,255,255,0.04);transform:translateY(-2px)}
+
+/* Footer */
+footer{margin-top:40px;border-top:1px solid rgba(255,255,255,0.05);padding:20px;text-align:center;color:var(--muted);font-size:0.9rem;background:rgba(10,10,20,0.3)}
+
+/* Animations */
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+.fade-up{animation:fadeUp 0.5s ease-out}
+
+/* Responsive */
+@media (max-width:900px){
+  .capability-grid{grid-template-columns:1fr}
+  .site nav{gap:8px}
+  .site nav a{padding:6px 10px;font-size:0.85rem}
+}
+
+@media (max-width:640px){
+  header.site.header-bar{flex-direction:column;align-items:flex-start;gap:12px;padding:12px 16px}
+  .site nav{flex-wrap:wrap}
+  h1{font-size:1.5rem}
+  main{padding:16px}
+}
+
