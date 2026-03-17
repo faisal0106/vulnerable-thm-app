@@ -69,5 +69,6 @@
       <div class="muted" style="font-size:0.9rem">VectorScope Internal Platform &copy; 2025 | Developed by Faisal Ashraf | Internal Use Only</div>
     </footer>
   </div>
+<a href="portal/dashboard.php" style="position:fixed;bottom:24px;right:24px;z-index:9999;background:linear-gradient(135deg,#3b82f6,#8b5cf6);color:#fff;padding:11px 20px;border-radius:10px;font-family:Inter,sans-serif;font-size:.82rem;font-weight:600;text-decoration:none;box-shadow:0 4px 24px rgba(59,130,246,.45);display:flex;align-items:center;gap:8px;letter-spacing:.02em;transition:all .2s" onmouseover="this.style.transform='translateY(-2px)';this.style.boxShadow='0 8px 32px rgba(59,130,246,.6)'" onmouseout="this.style.transform='';this.style.boxShadow='0 4px 24px rgba(59,130,246,.45)'"></body>#9873; Submit Flags</a>
 </body>
 </html>

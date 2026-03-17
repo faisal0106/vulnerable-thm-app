@@ -62,114 +62,149 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>VectorScope CTF // Access Terminal</title>
+<title>VectorScope CTF — Access Portal</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Orbitron:wght@600;800;900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&display=swap');
-  *{box-sizing:border-box;margin:0;padding:0}
-  :root{--green:#00ff41;--green-dim:#00b32c;--green-dark:#003d0c;--bg:#020d03;--panel:#040f05;--red:#ff2a2a;--yellow:#f0e130;--cyan:#00e5ff}
-  body{background:var(--bg);color:var(--green);font-family:'Share Tech Mono',monospace;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden}
-  .scanlines{pointer-events:none;position:fixed;inset:0;background:repeating-linear-gradient(to bottom,transparent 0,transparent 2px,rgba(0,0,0,.18) 2px,rgba(0,0,0,.18) 4px);z-index:999}
-  .glow{text-shadow:0 0 8px var(--green),0 0 20px var(--green-dim)}
-  .title{font-family:'Orbitron',monospace;font-size:1.6rem;font-weight:900;letter-spacing:.2em;text-align:center;color:var(--green);text-shadow:0 0 12px var(--green),0 0 30px var(--green-dim);margin-bottom:4px}
-  .subtitle{font-size:.75rem;color:var(--green-dim);letter-spacing:.25em;text-align:center;margin-bottom:32px}
-  .terminal{background:var(--panel);border:1px solid var(--green-dim);border-radius:4px;padding:36px 40px;width:100%;max-width:420px;box-shadow:0 0 40px rgba(0,255,65,.07),inset 0 0 60px rgba(0,0,0,.4);position:relative}
-  .terminal::before{content:'';position:absolute;inset:-1px;border-radius:4px;background:linear-gradient(135deg,rgba(0,255,65,.12),transparent 60%);pointer-events:none}
-  .tab-bar{display:flex;gap:0;margin-bottom:28px;border-bottom:1px solid var(--green-dark)}
-  .tab{flex:1;padding:8px;text-align:center;cursor:pointer;font-family:'Share Tech Mono',monospace;font-size:.85rem;letter-spacing:.1em;color:var(--green-dim);border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .2s;text-decoration:none}
-  .tab.active{color:var(--green);border-bottom-color:var(--green);text-shadow:0 0 8px var(--green)}
-  .tab:hover{color:var(--green)}
-  .prompt{font-size:.8rem;color:var(--green-dim);margin-bottom:20px}
-  .prompt span{color:var(--green)}
-  label{display:block;font-size:.78rem;color:var(--green-dim);letter-spacing:.12em;margin-bottom:6px;margin-top:16px}
-  input{width:100%;background:rgba(0,255,65,.04);border:1px solid var(--green-dark);border-radius:3px;padding:10px 12px;color:var(--green);font-family:'Share Tech Mono',monospace;font-size:.9rem;outline:none;transition:border-color .2s,box-shadow .2s}
-  input:focus{border-color:var(--green);box-shadow:0 0 10px rgba(0,255,65,.15)}
-  .btn{width:100%;margin-top:24px;padding:12px;background:transparent;border:1px solid var(--green);border-radius:3px;color:var(--green);font-family:'Orbitron',monospace;font-size:.85rem;font-weight:700;letter-spacing:.2em;cursor:pointer;transition:all .3s;text-transform:uppercase}
-  .btn:hover{background:rgba(0,255,65,.1);box-shadow:0 0 20px rgba(0,255,65,.2)}
-  .error{background:rgba(255,42,42,.08);border:1px solid rgba(255,42,42,.4);color:var(--red);padding:10px 14px;border-radius:3px;font-size:.82rem;margin-bottom:16px;letter-spacing:.05em}
-  .leaderboard-link{text-align:center;margin-top:20px;font-size:.78rem;color:var(--green-dim)}
-  .leaderboard-link a{color:var(--cyan);text-decoration:none}
-  .leaderboard-link a:hover{text-shadow:0 0 8px var(--cyan)}
-  .blinking{animation:blink 1s step-end infinite}
-  @keyframes blink{50%{opacity:0}}
-  .corner{position:absolute;width:10px;height:10px;border-color:var(--green);border-style:solid}
-  .corner.tl{top:-1px;left:-1px;border-width:2px 0 0 2px}
-  .corner.tr{top:-1px;right:-1px;border-width:2px 2px 0 0}
-  .corner.bl{bottom:-1px;left:-1px;border-width:0 0 2px 2px}
-  .corner.br{bottom:-1px;right:-1px;border-width:0 2px 2px 0}
-  .matrix-bg{position:fixed;inset:0;z-index:-1;opacity:.08;overflow:hidden}
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#06070f;--bg2:#0d0e1a;
+  --blue:#3b82f6;--blue-dim:#1e40af;--cyan:#06b6d4;--purple:#8b5cf6;
+  --emerald:#10b981;--red:#ef4444;--amber:#f59e0b;
+  --text:#e2e8f0;--text-dim:#94a3b8;--text-muted:#475569;
+  --border:rgba(255,255,255,0.07);--border-hi:rgba(59,130,246,0.5);
+  --panel:rgba(255,255,255,0.03);--panel-hi:rgba(59,130,246,0.06);
+}
+body{background:var(--bg);color:var(--text);font-family:'Inter',sans-serif;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;overflow:hidden}
+
+canvas#matrix{position:fixed;inset:0;z-index:0;opacity:.18}
+.scanlines{pointer-events:none;position:fixed;inset:0;background:repeating-linear-gradient(to bottom,transparent 0,transparent 3px,rgba(0,0,0,.06) 3px,rgba(0,0,0,.06) 4px);z-index:1}
+.content{position:relative;z-index:2;width:100%;max-width:440px;padding:24px}
+
+.brand-area{text-align:center;margin-bottom:36px}
+.brand-icon{width:56px;height:56px;background:linear-gradient(135deg,var(--blue),var(--purple));border-radius:14px;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;box-shadow:0 0 30px rgba(59,130,246,.4),0 8px 20px rgba(0,0,0,.5)}
+.brand-icon svg{width:28px;height:28px;fill:white}
+.brand-title{font-family:'Orbitron',monospace;font-size:1.5rem;font-weight:900;letter-spacing:.15em;background:linear-gradient(135deg,#60a5fa,#a78bfa);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.brand-sub{font-size:.75rem;color:var(--text-muted);letter-spacing:.2em;margin-top:6px;text-transform:uppercase}
+
+.card{background:rgba(13,14,26,0.8);border:1px solid var(--border);border-radius:16px;padding:32px;backdrop-filter:blur(20px);box-shadow:0 20px 60px rgba(0,0,0,.6),inset 0 1px 0 rgba(255,255,255,.05)}
+.card-glow{position:absolute;inset:-1px;border-radius:16px;background:linear-gradient(135deg,rgba(59,130,246,.15),transparent 50%,rgba(139,92,246,.1));pointer-events:none;border:1px solid transparent}
+
+.tabs{display:flex;background:rgba(0,0,0,.3);border-radius:10px;padding:4px;margin-bottom:28px;gap:4px}
+.tab{flex:1;padding:9px;text-align:center;border-radius:8px;cursor:pointer;font-size:.82rem;font-weight:500;letter-spacing:.05em;color:var(--text-muted);transition:all .2s;text-decoration:none;display:block}
+.tab.active{background:linear-gradient(135deg,var(--blue-dim),rgba(139,92,246,.4));color:var(--text);box-shadow:0 2px 8px rgba(59,130,246,.3)}
+.tab:hover:not(.active){color:var(--text-dim)}
+
+.field{margin-bottom:16px}
+label{display:block;font-size:.75rem;font-weight:500;color:var(--text-dim);letter-spacing:.08em;margin-bottom:8px;text-transform:uppercase}
+input{width:100%;background:rgba(0,0,0,.4);border:1px solid var(--border);border-radius:8px;padding:11px 14px;color:var(--text);font-family:'JetBrains Mono',monospace;font-size:.9rem;outline:none;transition:all .2s}
+input:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(59,130,246,.12);background:rgba(0,0,0,.5)}
+input::placeholder{color:var(--text-muted)}
+
+.btn-primary{width:100%;margin-top:8px;padding:13px;background:linear-gradient(135deg,var(--blue),var(--purple));border:none;border-radius:10px;color:#fff;font-family:'Orbitron',monospace;font-size:.82rem;font-weight:800;letter-spacing:.15em;cursor:pointer;transition:all .3s;box-shadow:0 4px 20px rgba(59,130,246,.3);text-transform:uppercase}
+.btn-primary:hover{transform:translateY(-1px);box-shadow:0 6px 28px rgba(59,130,246,.45)}
+.btn-primary:active{transform:translateY(0)}
+
+.error-box{background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.25);border-radius:8px;padding:10px 14px;font-size:.82rem;color:#fca5a5;margin-bottom:18px;display:flex;align-items:center;gap:8px}
+
+.footer-links{text-align:center;margin-top:20px;font-size:.78rem;color:var(--text-muted);display:flex;justify-content:center;gap:20px}
+.footer-links a{color:var(--cyan);text-decoration:none;transition:color .2s}
+.footer-links a:hover{color:#67e8f9}
+
+.badge{display:inline-block;background:rgba(16,185,129,.12);border:1px solid rgba(16,185,129,.25);color:var(--emerald);font-size:.68rem;padding:2px 8px;border-radius:20px;letter-spacing:.08em;margin-left:8px;vertical-align:middle}
+
+@keyframes pulse-border{0%,100%{box-shadow:0 20px 60px rgba(0,0,0,.6),0 0 0 0 rgba(59,130,246,.3)}50%{box-shadow:0 20px 60px rgba(0,0,0,.6),0 0 0 4px rgba(59,130,246,.1)}}
+.card{animation:pulse-border 4s ease-in-out infinite}
 </style>
 </head>
 <body>
+<canvas id="matrix"></canvas>
 <div class="scanlines"></div>
-<canvas class="matrix-bg" id="matrix"></canvas>
 
-<div style="margin-bottom:32px;text-align:center">
-  <div class="title">VECTORSCOPE CTF</div>
-  <div class="subtitle">// OPERATOR AUTHENTICATION TERMINAL //</div>
-</div>
-
-<div class="terminal">
-  <div class="corner tl"></div><div class="corner tr"></div>
-  <div class="corner bl"></div><div class="corner br"></div>
-
-  <div class="tab-bar">
-    <a class="tab <?= $mode==='login'?'active':'' ?>" href="login.php?mode=login">[ LOGIN ]</a>
-    <a class="tab <?= $mode==='register'?'active':'' ?>" href="login.php?mode=register">[ REGISTER ]</a>
+<div class="content">
+  <div class="brand-area">
+    <div class="brand-icon">
+      <svg viewBox="0 0 24 24"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+    </div>
+    <div class="brand-title">VECTORSCOPE</div>
+    <div class="brand-sub">CTF Challenge Platform <span class="badge">LIVE</span></div>
   </div>
 
-  <?php if ($error): ?>
-    <div class="error">&gt; ERROR: <?= htmlspecialchars($error) ?></div>
-  <?php endif; ?>
+  <div class="card" style="position:relative">
+    <div class="card-glow"></div>
+    <div class="tabs">
+      <a class="tab <?= $mode==='login'?'active':'' ?>" href="?mode=login">Sign In</a>
+      <a class="tab <?= $mode==='register'?'active':'' ?>" href="?mode=register">Register</a>
+    </div>
 
-  <?php if ($mode === 'register'): ?>
-    <div class="prompt">&gt; CREATE OPERATOR ACCOUNT <span class="blinking">_</span></div>
-    <form method="POST">
-      <input type="hidden" name="action" value="register">
-      <label>// CALLSIGN (USERNAME)</label>
-      <input type="text" name="username" autocomplete="off" required placeholder="enter_callsign">
-      <label>// ACCESS CODE (PASSWORD)</label>
-      <input type="password" name="password" required placeholder="min 6 chars">
-      <button type="submit" class="btn">// INITIALIZE ACCOUNT</button>
-    </form>
-  <?php else: ?>
-    <div class="prompt">&gt; AUTHENTICATE TO CONTINUE <span class="blinking">_</span></div>
-    <form method="POST">
-      <input type="hidden" name="action" value="login">
-      <label>// OPERATOR ID</label>
-      <input type="text" name="username" autocomplete="off" required placeholder="enter_username">
-      <label>// ACCESS CODE</label>
-      <input type="password" name="password" required placeholder="••••••••">
-      <button type="submit" class="btn">// AUTHENTICATE</button>
-    </form>
-  <?php endif; ?>
+    <?php if ($error): ?>
+      <div class="error-box">
+        <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="#ef4444"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        <?= htmlspecialchars($error) ?>
+      </div>
+    <?php endif; ?>
 
-  <div class="leaderboard-link" style="margin-top:20px">
-    <a href="leaderboard.php">[ VIEW LEADERBOARD ]</a> &nbsp;|&nbsp;
-    <a href="../home.php" style="color:var(--green-dim)">[ ENTER TARGET SYSTEM ]</a>
+    <?php if ($mode === 'register'): ?>
+      <form method="POST">
+        <input type="hidden" name="action" value="register">
+        <div class="field">
+          <label>Callsign (Username)</label>
+          <input type="text" name="username" autocomplete="off" required placeholder="your_handle">
+        </div>
+        <div class="field">
+          <label>Access Code (Password)</label>
+          <input type="password" name="password" required placeholder="minimum 6 characters">
+        </div>
+        <button type="submit" class="btn-primary">Create Account</button>
+      </form>
+    <?php else: ?>
+      <form method="POST">
+        <input type="hidden" name="action" value="login">
+        <div class="field">
+          <label>Operator ID</label>
+          <input type="text" name="username" autocomplete="off" required placeholder="username" autofocus>
+        </div>
+        <div class="field">
+          <label>Access Code</label>
+          <input type="password" name="password" required placeholder="••••••••">
+        </div>
+        <button type="submit" class="btn-primary">Authenticate</button>
+      </form>
+    <?php endif; ?>
+  </div>
+
+  <div class="footer-links">
+    <a href="leaderboard.php">Leaderboard</a>
+    <a href="../home.php" style="color:var(--text-muted)">Target System</a>
   </div>
 </div>
 
 <script>
 const canvas = document.getElementById('matrix');
 const ctx = canvas.getContext('2d');
-canvas.width = window.innerWidth;
-canvas.height = window.innerHeight;
-const chars = 'アカサタナハマヤラワ01アイウエオABCDEF{}[]<>/\\'.split('');
-const cols = Math.floor(canvas.width / 16);
-const drops = Array(cols).fill(1);
+function resize() { canvas.width = innerWidth; canvas.height = innerHeight; }
+resize();
+window.addEventListener('resize', resize);
+const chars = 'アイウエオカキクケコ0123456789ABCDEFabcdef{}[]<>/\\|=+-*'.split('');
+const colors = ['#3b82f6','#06b6d4','#8b5cf6','#60a5fa','#a78bfa','#22d3ee'];
+const cols = Math.floor(canvas.width / 18);
+const drops = Array.from({length: cols}, () => Math.random() * -100);
+const dropColors = drops.map(() => colors[Math.floor(Math.random() * colors.length)]);
 function draw() {
-  ctx.fillStyle = 'rgba(2,13,3,0.05)';
+  ctx.fillStyle = 'rgba(6,7,15,0.05)';
   ctx.fillRect(0, 0, canvas.width, canvas.height);
-  ctx.fillStyle = '#00ff41';
-  ctx.font = '14px monospace';
   drops.forEach((y, i) => {
-    const c = chars[Math.floor(Math.random() * chars.length)];
-    ctx.fillText(c, i * 16, y * 16);
-    if (y * 16 > canvas.height && Math.random() > 0.975) drops[i] = 0;
+    ctx.fillStyle = dropColors[i];
+    ctx.font = '13px monospace';
+    ctx.fillText(chars[Math.floor(Math.random() * chars.length)], i * 18, y * 18);
+    if (y * 18 > canvas.height && Math.random() > 0.975) {
+      drops[i] = 0;
+      dropColors[i] = colors[Math.floor(Math.random() * colors.length)];
+    }
     drops[i]++;
   });
 }
-setInterval(draw, 50);
+setInterval(draw, 45);
 </script>
 </body>
 </html>
