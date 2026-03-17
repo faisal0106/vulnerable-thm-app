@@ -6,4 +6,4 @@ RUN a2dismod mpm_event mpm_worker && a2enmod mpm_prefork
 # Enable useful modules (optional)
 RUN a2enmod rewrite
 
-COPY . /var/www/html/
+COPY Task-1/ /var/www/html/
