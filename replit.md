@@ -11,23 +11,39 @@ VectorScope is an intentionally vulnerable PHP web application designed for secu
 ## Project Structure
 ```
 Task-1/
-  app/          - PHP application files (document root)
-    config.php  - Database connection + mysqli compatibility shim (SQLite)
-    index.php   - Home page
-    login.php   - Login page (intentional SQL injection)
-    search.php  - Asset search (intentional XSS)
-    orders.php  - Records lookup (intentional blind SQLi)
-    profile.php - User profile (intentional IDOR)
-    admin.php   - Admin panel
-    debug.php   - Debug info exposure
-    xss_flag.php - XSS flag endpoint
-    style.css   - Stylesheet
+  app/              - PHP application files (document root, port 5000)
+    config.php      - DB connection + mysqli compatibility shim (SQLite)
+    index.php       - Home page
+    login.php       - Login page (intentional SQL injection)
+    search.php      - Asset search (intentional XSS)
+    orders.php      - Records lookup (intentional blind SQLi)
+    profile.php     - User profile (intentional IDOR)
+    admin.php       - Admin panel
+    debug.php       - Debug info exposure
+    xss_flag.php    - XSS flag endpoint
+    style.css       - Stylesheet
+    portal/         - CTF portal (hacker UI)
+      config.php    - Portal DB setup, session helpers, scoring
+      index.php     - Redirect to login or dashboard
+      login.php     - Login + register (hacker/matrix UI)
+      dashboard.php - User dashboard: flag submission, progress, rank
+      leaderboard.php - Public leaderboard (auto-refreshes)
+      admin.php     - Admin panel: scores, reset, player management
+      logout.php    - Session logout
   db/
-    init.sql    - Original MySQL schema (reference only)
-    app.sqlite  - SQLite database (auto-created at runtime)
-  Dockerfile    - Original Docker config (not used in Replit)
+    init.sql        - Original MySQL schema (reference only)
+    app.sqlite      - VectorScope SQLite DB (auto-created)
+    portal.sqlite   - CTF portal SQLite DB (auto-created)
+  Dockerfile        - Original Docker config (not used in Replit)
   docker-compose.yml - Original Docker Compose (not used in Replit)
 ```
+
+## CTF Portal
+- **URL:** `/portal/` (e.g. `/portal/login.php`)
+- **Admin login:** username `admin`, password `admin123`
+- Users register, explore VectorScope, find flags, then submit them in the portal
+- Scoring: each flag worth 50–150 pts (500 pts max), tracks time from first to last capture
+- Admin can reset individual or all scores, delete accounts, view per-player flag capture logs
 
 ## Running
 - Workflow: `php -S 0.0.0.0:5000 -t Task-1/app`
