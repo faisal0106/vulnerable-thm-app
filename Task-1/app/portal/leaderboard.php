@@ -86,7 +86,7 @@ $total_players = count($leaderboard);
     <?php else: ?>
       <a href="login.php">LOGIN</a>
     <?php endif; ?>
-    <a href="../index.php">TARGET SYSTEM</a>
+    <a href="../home.php">TARGET SYSTEM</a>
   </div>
 </div>
 

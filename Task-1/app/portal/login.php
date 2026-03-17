@@ -145,7 +145,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
   <div class="leaderboard-link" style="margin-top:20px">
     <a href="leaderboard.php">[ VIEW LEADERBOARD ]</a> &nbsp;|&nbsp;
-    <a href="../index.php" style="color:var(--green-dim)">[ ENTER TARGET SYSTEM ]</a>
+    <a href="../home.php" style="color:var(--green-dim)">[ ENTER TARGET SYSTEM ]</a>
   </div>
 </div>
 

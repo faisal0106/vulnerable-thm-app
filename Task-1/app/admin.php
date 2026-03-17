@@ -16,7 +16,7 @@
           <div class="title">VectorScope</div>
         </div>
         <nav class="nav">
-          <a href="index.php">Home</a>
+          <a href="home.php">Home</a>
           <a href="search.php">Search</a>
           <a href="orders.php">Records</a>
         </nav>

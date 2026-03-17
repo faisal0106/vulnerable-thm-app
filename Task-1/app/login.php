@@ -47,7 +47,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         </div>
       </div>
       <div class="user-menu">
-        <a href="index.php" style="color:var(--muted);text-decoration:none;font-size:0.9rem">Back to Home</a>
+        <a href="home.php" style="color:var(--muted);text-decoration:none;font-size:0.9rem">Back to Home</a>
       </div>
     </header>
 

@@ -117,7 +117,7 @@ while ($r = $rank_stmt->fetch(PDO::FETCH_ASSOC)) {
   <div class="topbar-right">
     <span style="color:var(--green)">// <?= htmlspecialchars(strtoupper($username)) ?></span>
     <a href="leaderboard.php">LEADERBOARD</a>
-    <a href="../index.php">TARGET SYSTEM</a>
+    <a href="../home.php">TARGET SYSTEM</a>
     <a href="logout.php" style="color:var(--red)">LOGOUT</a>
   </div>
 </div>
@@ -192,7 +192,7 @@ while ($r = $rank_stmt->fetch(PDO::FETCH_ASSOC)) {
   </div>
 
   <div style="text-align:center;margin-top:12px">
-    <a href="../index.php" class="nav-link">[ ENTER TARGET SYSTEM → ]</a>
+    <a href="../home.php" class="nav-link">[ ENTER TARGET SYSTEM → ]</a>
     &nbsp;&nbsp;
     <a href="leaderboard.php" class="nav-link">[ VIEW LEADERBOARD ]</a>
   </div>
