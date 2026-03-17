@@ -16,7 +16,7 @@ function _portal_make_pdo() {
         $db   = ltrim(explode('?', $u['path'])[0], '/');
         $user = $u['user'];
         $pass = rawurldecode($u['pass'] ?? '');
-        $pdo  = new PDO("pgsql:host=$host;port=$port;dbname=$db;sslmode=require", $user, $pass);
+        $pdo  = new PDO("pgsql:host=$host;port=$port;dbname=$db;sslmode=prefer", $user, $pass);
     } else {
         $path = __DIR__ . '/../../db/portal.sqlite';
         if (!is_dir(dirname($path))) mkdir(dirname($path), 0777, true);
