@@ -1,51 +1,82 @@
 <?php
-// SQLite-backed database layer that mimics the mysqli interface used throughout the app.
-$db_path = __DIR__ . '/../db/app.sqlite';
+// ---------------------------------------------------------------
+// Database bootstrap — auto-detects environment:
+//   Production (Vercel): uses POSTGRES_URL env var → PostgreSQL
+//   Local dev:           falls back to SQLite
+// ---------------------------------------------------------------
 
-// Ensure db directory exists
-if (!is_dir(dirname($db_path))) {
-    mkdir(dirname($db_path), 0777, true);
+function _vs_make_pdo() {
+    $pg_url = getenv('POSTGRES_URL') ?: getenv('DATABASE_URL');
+    if ($pg_url) {
+        $u    = parse_url($pg_url);
+        $host = $u['host'];
+        $port = $u['port'] ?? 5432;
+        $db   = ltrim(explode('?', $u['path'])[0], '/');
+        $user = $u['user'];
+        $pass = rawurldecode($u['pass'] ?? '');
+        $pdo  = new PDO("pgsql:host=$host;port=$port;dbname=$db;sslmode=require", $user, $pass);
+    } else {
+        $path = __DIR__ . '/../db/app.sqlite';
+        if (!is_dir(dirname($path))) mkdir(dirname($path), 0777, true);
+        $pdo = new PDO('sqlite:' . $path);
+    }
+    $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    return $pdo;
 }
 
-// Initialize SQLite database
-$pdo = new PDO('sqlite:' . $db_path);
-$pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+$pdo = _vs_make_pdo();
+$_is_pg = $pdo->getAttribute(PDO::ATTR_DRIVER_NAME) === 'pgsql';
 
-// Create tables and seed data if not present
-$pdo->exec("CREATE TABLE IF NOT EXISTS users (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    username VARCHAR(50),
-    password VARCHAR(50),
-    email VARCHAR(100),
-    notes TEXT
-)");
-
-$pdo->exec("CREATE TABLE IF NOT EXISTS orders (
-    id INTEGER,
-    status VARCHAR(50)
-)");
-
-$pdo->exec("CREATE TABLE IF NOT EXISTS flags (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    name VARCHAR(50),
-    flag VARCHAR(100)
-)");
-
-// Seed data only if empty
-$count = $pdo->query("SELECT COUNT(*) FROM users")->fetchColumn();
-if ($count == 0) {
-    $pdo->exec("INSERT INTO users (id, username, password, email, notes) VALUES
-        (1, 'user', 'userpass', 'user@example.com', 'Standard user.'),
-        (2, 'admin', 'adminpass', 'admin@example.com', 'Admin Notes: THM{IDOR_ACCESS}')");
+// ── Schema ──────────────────────────────────────────────────────
+if ($_is_pg) {
+    $pdo->exec("
+        CREATE TABLE IF NOT EXISTS users (
+            id       SERIAL PRIMARY KEY,
+            username VARCHAR(50),
+            password VARCHAR(50),
+            email    VARCHAR(100),
+            notes    TEXT
+        );
+        CREATE TABLE IF NOT EXISTS orders (
+            id     INTEGER,
+            status VARCHAR(50)
+        );
+        CREATE TABLE IF NOT EXISTS flags (
+            id   SERIAL PRIMARY KEY,
+            name VARCHAR(50),
+            flag VARCHAR(100)
+        );
+    ");
+} else {
+    $pdo->exec("CREATE TABLE IF NOT EXISTS users (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        username VARCHAR(50), password VARCHAR(50),
+        email VARCHAR(100), notes TEXT)");
+    $pdo->exec("CREATE TABLE IF NOT EXISTS orders (id INTEGER, status VARCHAR(50))");
+    $pdo->exec("CREATE TABLE IF NOT EXISTS flags (
+        id INTEGER PRIMARY KEY AUTOINCREMENT, name VARCHAR(50), flag VARCHAR(100))");
 }
 
-$count = $pdo->query("SELECT COUNT(*) FROM orders")->fetchColumn();
-if ($count == 0) {
+// ── Seed data ───────────────────────────────────────────────────
+$user_count = (int)$pdo->query("SELECT COUNT(*) FROM users")->fetchColumn();
+if ($user_count === 0) {
+    if ($_is_pg) {
+        $pdo->exec("INSERT INTO users (id, username, password, email, notes) VALUES
+            (1, 'user',  'userpass',  'user@example.com',  'Standard user.'),
+            (2, 'admin', 'adminpass', 'admin@example.com', 'Admin Notes: THM{IDOR_ACCESS}')");
+        $pdo->exec("SELECT setval(pg_get_serial_sequence('users','id'), (SELECT MAX(id) FROM users))");
+    } else {
+        $pdo->exec("INSERT INTO users (id, username, password, email, notes) VALUES
+            (1,'user','userpass','user@example.com','Standard user.'),
+            (2,'admin','adminpass','admin@example.com','Admin Notes: THM{IDOR_ACCESS}')");
+    }
+}
+
+if ((int)$pdo->query("SELECT COUNT(*) FROM orders")->fetchColumn() === 0) {
     $pdo->exec("INSERT INTO orders VALUES (1, 'shipped')");
 }
 
-$count = $pdo->query("SELECT COUNT(*) FROM flags")->fetchColumn();
-if ($count == 0) {
+if ((int)$pdo->query("SELECT COUNT(*) FROM flags")->fetchColumn() === 0) {
     $pdo->exec("INSERT INTO flags (name, flag) VALUES
         ('login_flag', 'THM{SQLI_LOGIN_BYPASS}'),
         ('xss_flag',   'THM{XSS_REFLECTED}'),
@@ -54,15 +85,13 @@ if ($count == 0) {
         ('debug_flag', 'THM{DEBUG_EXPOSED}')");
 }
 
-// Mysqli compatibility shim
+// ── Mysqli compatibility shim ────────────────────────────────────
 class MysqliShim {
     public $connect_error = null;
-    private $pdo;
     public $insert_id = 0;
+    private $pdo;
 
-    public function __construct($pdo) {
-        $this->pdo = $pdo;
-    }
+    public function __construct($pdo) { $this->pdo = $pdo; }
 
     public function real_escape_string($str) {
         return str_replace(["'", "\\"], ["''", "\\\\"], $str);
@@ -71,8 +100,7 @@ class MysqliShim {
     public function query($sql) {
         try {
             $stmt = $this->pdo->query($sql);
-            if ($stmt === false) return false;
-            return new ResultShim($stmt);
+            return $stmt ? new ResultShim($stmt) : false;
         } catch (Exception $e) {
             return false;
         }
@@ -80,31 +108,27 @@ class MysqliShim {
 }
 
 class ResultShim {
-    private $stmt;
-    private $rows = [];
-    private $pos = 0;
     public $num_rows = 0;
+    private $rows = [];
+    private $pos  = 0;
 
     public function __construct($stmt) {
-        $this->stmt = $stmt;
-        $this->rows = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        $this->rows     = $stmt->fetchAll(PDO::FETCH_ASSOC);
         $this->num_rows = count($this->rows);
     }
 
     public function fetch_assoc() {
-        if ($this->pos >= count($this->rows)) return null;
-        return $this->rows[$this->pos++];
+        return ($this->pos < $this->num_rows) ? $this->rows[$this->pos++] : null;
     }
 }
 
 $conn = new MysqliShim($pdo);
 
-// Helper: fetch a named flag from the `flags` table.
 function get_flag($name) {
     global $pdo;
-    $stmt = $pdo->prepare("SELECT flag FROM flags WHERE name=:name LIMIT 1");
-    $stmt->execute([':name' => $name]);
-    $row = $stmt->fetch(PDO::FETCH_ASSOC);
-    return $row ? $row['flag'] : null;
+    $s = $pdo->prepare("SELECT flag FROM flags WHERE name=:n LIMIT 1");
+    $s->execute([':n' => $name]);
+    $r = $s->fetch(PDO::FETCH_ASSOC);
+    return $r ? $r['flag'] : null;
 }
 ?>

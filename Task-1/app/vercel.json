@@ -1,0 +1,13 @@
+{
+  "functions": {
+    "*.php": { "runtime": "vercel-php@0.7.2" },
+    "portal/*.php": { "runtime": "vercel-php@0.7.2" }
+  },
+  "routes": [
+    { "src": "^/$",              "dest": "/index.php" },
+    { "src": "^/portal/?$",     "dest": "/portal/index.php" },
+    { "src": "^/(.*\\.php)(.*)", "dest": "/$1$2" },
+    { "src": "^/(.*\\.css)$",   "dest": "/$1" },
+    { "src": "^/portal/(.*)",   "dest": "/portal/$1" }
+  ]
+}
