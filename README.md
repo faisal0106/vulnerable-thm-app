@@ -1,106 +1,120 @@
-# 🛡️ CTF Vector Scope Lab
+# VectorScope CTF Lab
 
-Welcome to the CTF Vector Scope Lab.
-This platform contains intentionally vulnerable components designed for hands-on practice in web application security.
+A deliberately vulnerable web application for practising common web security vulnerabilities. Built for educational purposes as a self-hosted CTF (Capture The Flag) lab.
+
+**Live instance:** [crescence-ctf.up.railway.app](https://crescence-ctf.up.railway.app)
 
 ---
 
-## 🚀 Getting Started
+## What is this?
 
-### 1. Start the Lab Environment
+VectorScope is a fake internal asset management platform with six intentionally introduced security flaws. Your job is to find and exploit them, capturing a flag from each one.
 
-Make sure you have Docker installed.
+This is inspired by TryHackMe-style labs — the app looks like a real corporate tool, but the vulnerabilities are real and fully exploitable.
 
-Run:
+---
+
+## Vulnerabilities & Flags
+
+| # | Vulnerability | Location | Difficulty |
+|---|---|---|---|
+| 1 | SQL Injection — Login Bypass | `/login.php` | Easy |
+| 2 | Reflected XSS | `/search.php` | Easy |
+| 3 | Blind SQL Injection | `/orders.php` | Medium |
+| 4 | IDOR — Insecure Direct Object Reference | `/profile.php` | Easy |
+| 5 | Unauthenticated Admin Access | `/admin.php` | Easy |
+| 6 | Debug Page Exposure | `/debug.php` | Easy |
+
+All flags follow the format: `THM{...}`
+
+---
+
+## Getting Started
+
+### Play online
+
+Just open the live instance linked above — no setup required.
+
+### Run locally with Docker
 
 ```bash
-docker-compose up --build
+git clone https://github.com/yourusername/your-repo-name.git
+cd your-repo-name
+docker build -t vectorscope .
+docker run -p 8080:80 vectorscope
 ```
 
-This will start:
+Then open [http://localhost:8080](http://localhost:8080) in your browser.
 
-* Backend API server
-* Frontend web application
+> The database is created and seeded automatically on first run. No external database needed.
 
----
+### Run locally with PHP (no Docker)
 
-### 2. Access the Application
-
-Open your browser and navigate to:
-
-```
-http://localhost:3000
-```
-
----
-
-## 🎯 Objective
-
-Your goal is to:
-
-* Explore the application
-* Identify vulnerabilities
-* Exploit them
-* Capture flags
-
----
-
-## 🏁 Flags
-
-Flags are hidden across different parts of the application.
-
-Example format:
-
-```
-THM{something_here}
-```
-
-Each flag corresponds to a specific vulnerability.
-
----
-
-## 🧠 Hints (Minimal Guidance)
-
-* Not everything is properly secured 👀
-* Trust boundaries may be broken
-* Inputs may not be sanitized
-* Access controls might be flawed
-* Think like an attacker
-
----
-
-## 🧪 Possible Attack Vectors
-
-* Authentication bypass
-* Input-based attacks
-* Client-side injection
-* Direct object access
-* Hidden or unlinked routes
-
----
-
-## ⚠️ Rules
-
-* This lab is for **educational purposes only**
-* Do not use these techniques on real systems without permission
-* All vulnerabilities are intentional
-
----
-
-## 🔄 Reset Lab (Optional)
-
-To reset the environment:
+Requires PHP 8.2+ with the `pdo_sqlite` extension.
 
 ```bash
-docker-compose down -v
-docker-compose up --build
+cd Task-1
+php -S 0.0.0.0:8080 -t app/
+```
+
+Then open [http://localhost:8080](http://localhost:8080).
+
+---
+
+## Tech Stack
+
+- PHP 8.2
+- SQLite (auto-created on first run, no setup needed)
+- Apache 2.4
+- Docker
+
+---
+
+## Deployment
+
+This app is deployed on [Railway](https://railway.app) using the included Dockerfile.
+
+To deploy your own instance:
+
+1. Fork this repo
+2. Go to [railway.app](https://railway.app) → New Project → Deploy from GitHub
+3. Select your fork
+4. Under **Settings → Networking**, generate a domain
+5. Done — Railway auto-builds and deploys from the Dockerfile
+
+---
+
+## Hints
+
+- Not everything requires authentication
+- URL parameters are powerful
+- Look at what the server reflects back to you
+- Try changing numbers in URLs
+- Some pages were never meant to be public
+
+---
+
+## Rules
+
+- For **educational use only**
+- Do not apply these techniques to real systems without explicit permission
+- All vulnerabilities are intentional and contained within this app
+
+---
+
+## Reset
+
+On Railway, every redeploy wipes and re-seeds the database automatically — so just trigger a redeploy to reset the lab to its original state.
+
+For local Docker, stop and restart the container:
+
+```bash
+docker stop <container-id>
+docker run -p 8080:80 vectorscope
 ```
 
 ---
 
-## 💀 Final Note
+## Disclaimer
 
-Flags are not always obvious.
-Look deeper. Break things. Think critically.
-
-Good luck, hacker.
+This application contains intentional security vulnerabilities. It is designed for learning in a controlled environment. The authors are not responsible for misuse.
