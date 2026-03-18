@@ -10,7 +10,7 @@ RUN a2dismod mpm_event || true \
 RUN a2enmod rewrite
 
 # Copy app
-COPY app/portal/ /var/www/html/portal/
+COPY app/ /var/www/html/portal/
 
 # Set correct root
 RUN sed -i 's|DocumentRoot /var/www/html|DocumentRoot /var/www/html/portal|g' /etc/apache2/sites-available/000-default.conf
