@@ -1,9 +1,5 @@
 FROM php:8.2-apache
 
-# Fix MPM conflict
-RUN a2dismod mpm_event mpm_worker || true \
-    && a2enmod mpm_prefork
-
 # Install PDO SQLite extension
 RUN apt-get update && apt-get install -y libsqlite3-dev \
     && docker-php-ext-install pdo pdo_sqlite \
@@ -16,8 +12,6 @@ RUN a2enmod rewrite
 COPY app/ /var/www/html/
 
 # Create db/ directory at the correct path
-# config.php:        __DIR__ = /var/www/html        → /../db  = /var/www/db
-# portal/config.php: __DIR__ = /var/www/html/portal → /../../db = /var/www/db
 RUN mkdir -p /var/www/db \
     && chmod -R 777 /var/www/db \
     && chown -R www-data:www-data /var/www/db
@@ -30,4 +24,5 @@ RUN sed -i '/<Directory \/var\/www\/>/,/<\/Directory>/ s/AllowOverride None/Allo
 RUN chown -R www-data:www-data /var/www/html \
     && chmod -R 755 /var/www/html
 
-EXPOSE 80
+# Fix MPM conflict at runtime + start Apache
+CMD bash -c "a2dismod mpm_event mpm_worker mpm_prefork 2>/dev/null; a2enmod mpm_prefork && apache2-foreground"
