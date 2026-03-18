@@ -13,7 +13,7 @@ RUN apt-get update && apt-get install -y libsqlite3-dev \
 RUN a2enmod rewrite
 
 # Copy app files into /var/www/html/
-COPY Task-1/app/ /var/www/html/
+COPY app/ /var/www/html/
 
 # Create db/ directory at the correct path
 # config.php:        __DIR__ = /var/www/html        → /../db  = /var/www/db
