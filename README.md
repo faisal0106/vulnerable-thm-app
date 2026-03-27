@@ -2,7 +2,7 @@
 
 A deliberately vulnerable web application for practising common web security vulnerabilities. Built for educational purposes as a self-hosted CTF (Capture The Flag) lab.
 
-**Live instance:** [crescence-ctf.up.railway.app](https://crescence-ctf.up.railway.app)
+**Live instance:** [vulnerable-thm-app--fassufaisal678.replit.app](https://vulnerable-thm-app--fassufaisal678.replit.app)
 
 ---
 
@@ -10,7 +10,7 @@ A deliberately vulnerable web application for practising common web security vul
 
 VectorScope is a fake internal asset management platform with six intentionally introduced security flaws. Your job is to find and exploit them, capturing a flag from each one.
 
-This is inspired by TryHackMe-style labs — the app looks like a real corporate tool, but the vulnerabilities are real and fully exploitable.
+Inspired by TryHackMe-style labs — the app looks like a real corporate tool, but the vulnerabilities are real and fully exploitable.
 
 ---
 
@@ -23,7 +23,7 @@ This is inspired by TryHackMe-style labs — the app looks like a real corporate
 | 3 | Blind SQL Injection | `/orders.php` | Medium |
 | 4 | IDOR — Insecure Direct Object Reference | `/profile.php` | Easy |
 | 5 | Unauthenticated Admin Access | `/admin.php` | Easy |
-| 6 | Debug Page Exposure | `/debug.php` | Easy |
+| 6 | Misconfiguration & Information Disclosure | Hidden | Medium |
 
 All flags follow the format: `THM{...}`
 
@@ -33,7 +33,7 @@ All flags follow the format: `THM{...}`
 
 ### Play online
 
-Just open the live instance linked above — no setup required.
+Open the live instance linked above — no setup required.
 
 ### Run locally with Docker
 
@@ -41,12 +41,12 @@ Just open the live instance linked above — no setup required.
 git clone https://github.com/yourusername/your-repo-name.git
 cd your-repo-name
 docker build -t vectorscope .
-docker run -p 8080:80 vectorscope
+docker run -p 8080:8080 vectorscope
 ```
 
 Then open [http://localhost:8080](http://localhost:8080) in your browser.
 
-> The database is created and seeded automatically on first run. No external database needed.
+The database is created and seeded automatically on first run. No external database needed.
 
 ### Run locally with PHP (no Docker)
 
@@ -61,26 +61,23 @@ Then open [http://localhost:8080](http://localhost:8080).
 
 ---
 
+## Project Structure
+
+```
+Task-1/
+├── app/                  # All PHP source files
+├── db/                   # SQLite databases (auto-created)
+├── Dockerfile            # Container setup
+└── README.md
+```
+
+---
+
 ## Tech Stack
 
 - PHP 8.2
 - SQLite (auto-created on first run, no setup needed)
-- Apache 2.4
 - Docker
-
----
-
-## Deployment
-
-This app is deployed on [Railway](https://railway.app) using the included Dockerfile.
-
-To deploy your own instance:
-
-1. Fork this repo
-2. Go to [railway.app](https://railway.app) → New Project → Deploy from GitHub
-3. Select your fork
-4. Under **Settings → Networking**, generate a domain
-5. Done — Railway auto-builds and deploys from the Dockerfile
 
 ---
 
@@ -91,6 +88,7 @@ To deploy your own instance:
 - Look at what the server reflects back to you
 - Try changing numbers in URLs
 - Some pages were never meant to be public
+- Think like an attacker
 
 ---
 
@@ -104,14 +102,7 @@ To deploy your own instance:
 
 ## Reset
 
-On Railway, every redeploy wipes and re-seeds the database automatically — so just trigger a redeploy to reset the lab to its original state.
-
-For local Docker, stop and restart the container:
-
-```bash
-docker stop <container-id>
-docker run -p 8080:80 vectorscope
-```
+To reset the lab, simply restart the container — the database wipes and re-seeds itself automatically on startup.
 
 ---
 
