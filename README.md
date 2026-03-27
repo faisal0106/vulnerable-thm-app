@@ -1,6 +1,6 @@
 # VectorScope CTF Lab
 
-A deliberately vulnerable web application for practising common web security vulnerabilities. Built for educational purposes as a self-hosted CTF (Capture The Flag) lab.
+A deliberately vulnerable Web application for practising common web security vulnerabilities. Built for educational purposes as a self-hosted CTF (Capture The Flag) lab.
 
 **Live instance:** [vulnerable-thm-app--fassufaisal678.replit.app](https://vulnerable-thm-app--fassufaisal678.replit.app)
 
