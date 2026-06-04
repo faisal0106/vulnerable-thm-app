@@ -1,17 +1,7 @@
 services:
   web:
     build:
-      context: ./   # 👈 force correct context
+      context: ./
       dockerfile: Dockerfile
     ports:
-      - "8080:80"
-    depends_on:
-      - db
-
-  db:
-    image: mysql:5.7
-    environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: thm
-    volumes:
-      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql
+      - "8080:8080"
